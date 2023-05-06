@@ -1,0 +1,186 @@
+Pipeline:
+  Name: Test 1
+  Stages:
+    - Name: Source
+      Actions:
+        - Name: Source
+          ActionTypeId:
+            Category: Source
+            Provider: Github
+          Configuration:
+            Connection: git@github.com
+            FullRepositoryId: yet-another-tool/ra-demo-repo-private
+            BranchName: main
+            DetectChanges: true
+          RunOrder: 1
+
+    - Name: CI
+      Actions:
+        - Name: Build
+          ActionTypeId:
+            Category: Build
+            Provider: Docker
+          Configuration:
+            ProjectName: Build
+          RunOrder: 1
+        - Name: Unit Test
+          ActionTypeId:
+            Category: Test
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 2
+        - Name: Functional Test
+          ActionTypeId:
+            Category: Test
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 2
+        - Name: Package
+          ActionTypeId:
+            Category: Build
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 3
+
+    - Name: Deploy to Development
+      Actions:
+        - Name: Deploy to E2E
+          ActionTypeId:
+            Category: Deploy
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 1
+        - Name: Deploy to Test
+          ActionTypeId:
+            Category: Deploy
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 3
+        - Name: Run E2E Tests
+          ActionTypeId:
+            Category: Test
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 2
+        - Name: Run Manual Tests
+          ActionTypeId:
+            Category: Test
+            Provider: Manual
+          RunOrder: 4
+
+    - Name: UAT Approval
+      Actions:
+        - ActionTypeId:
+            Category: Approval
+            Provider: Manual
+          RunOrder: 1
+
+    - Name: Deploy to Stage
+      Actions:
+        - Name: Deploy to Stage
+          ActionTypeId:
+            Category: Deploy
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 1
+        - Name: Smoke Test
+          ActionTypeId:
+            Category: Test
+            Provider: Manual
+          RunOrder: 2
+        - Name: Client Approval
+          ActionTypeId:
+            Category: Approval
+            Provider: Manual
+          RunOrder: 3
+
+    - Name: Production Approval
+      Actions:
+        - ActionTypeId:
+            Category: Approval
+            Provider: Manual
+          RunOrder: 1
+
+    - Name: Deploy to Production
+      Actions:
+        - Name: Deploy to Production
+          ActionTypeId:
+            Category: Deploy
+            Provider: Docker
+          Configuration:
+            ProjectName: String
+          RunOrder: 1
+        - Name: Smoke Test
+          ActionTypeId:
+            Category: Test
+            Provider: Manual
+          RunOrder: 2
+
+Build:
+  Name: Build
+  Description: Build Stuff
+  Environment:
+    Image: ubuntu
+    EnvironmentVariables:
+      - Name: STAGE
+        Value: Test
+        Type: PLAINTEXT
+      - Name: DEBIAN_FRONTEND
+        Value: noninteractive
+        Type: PLAINTEXT
+  BuildSpec: |
+    version: 0.2
+    phases:
+      install:
+        on-failure: ABORT
+        commands:
+          - echo "Installing some stuff for $STAGE"
+          - sleep 3
+          - echo "Configuring some stuff"
+          - sleep 3
+          - echo "Launched Unit tests"
+          - sleep 2
+          - echo "Launched Unit tests n1"
+          - sleep 2
+          - echo "Launched Unit tests n2"
+          - sleep 2
+          - echo "Launched Unit tests n3"
+          - sleep 3
+          - echo "Launched Functional tests"
+          - sleep 2
+          - echo "Launched Functional tests n1"
+          - sleep 2
+          - echo "everything is setup !"
+        finally:
+          - echo "Hello World install - finally"
+      pre_build:
+        on-failure: ABORT
+        commands:
+          - echo "Hello World - sleep 15 seconds"
+          - sleep 15
+        finally:
+          - echo "Hello World pre_build - finally"
+      build:
+        on-failure: ABORT
+        commands:
+          - echo "Hello World - building stuff"
+        finally:
+          - echo "Hello World build - finally"
+      post_build:
+        on-failure: ABORT
+        commands:
+          - echo "Hello World"
+        finally:
+          - echo "Hello World post_build - finally"
+      reports:
+        TBD
+      artifacts:
+        TBD
+  TimeoutInMinutes: 1

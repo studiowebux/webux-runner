@@ -1,0 +1,20 @@
+.env
+.DS_Store
+node_modules
+*.tgz
+
+# Tests
+*.pub
+*.key
+secrets.yml
+dev.yml
+
+# Example
+!example/**
+
+# Tests
+workspace
+
+# TS
+build
+dist

@@ -1,0 +1,45 @@
+{
+  "name": "@yetanothertool/yat-runner",
+  "version": "0.0.0",
+  "private": false,
+  "description": "Command runner",
+  "main": "build/index.js",
+  "types": "src/types/types.d.ts",
+  "files": [
+    "package.json",
+    "package-lock.json",
+    "build/"
+  ],
+  "bin": {
+    "yat-runner": "build/index.js"
+  },
+  "scripts": {
+    "test": "cd tests/ && node -r dotenv/config ../build/index.js",
+    "build": "rimraf ./build && tsc && npm run copy-files",
+    "start": "npm run build && node build/index.js",
+    "copy-files": "cp -r ./src/scripts ./build/"
+  },
+  "keywords": [],
+  "author": "Studio Webux",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
+    "@types/minimist": "^1.2.2",
+    "@types/node": "^18.15.11",
+    "dotenv": "^16.0.3",
+    "rimraf": "^4.4.1",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "minimist": "^1.2.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yet-another-tool/yat-runner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yet-another-tool/yat-runner/issues"
+  },
+  "homepage": "https://github.com/yet-another-tool/yat-runner#readme"
+}
